@@ -62,7 +62,7 @@ function maximum_weight_maximal_matching(g::Graph, w::Dict{Edge,T}; solver = GLP
             end
         end
         if length(idx) > 0
-            @constraint(model, sum{x[id], id=idx} == 1)
+            @constraint(model, sum(x[id] for id = idx) == 1)
         end
     end
 
@@ -75,11 +75,11 @@ function maximum_weight_maximal_matching(g::Graph, w::Dict{Edge,T}; solver = GLP
         end
 
         if length(idx) > 0
-            @constraint(model, sum{x[id], id=idx} <= 1)
+            @constraint(model, sum(x[id] for id = idx) <= 1)
         end
     end
 
-    @objective(model, Max, sum{c * x[edgemap[e]], (e,c)=w})
+    @objective(model, Max, sum(c * x[edgemap[e]] for (e,c) = w))
 
     status = solve(model)
     status != :Optimal && error("JuMP solver failed to find optimal solution.")
