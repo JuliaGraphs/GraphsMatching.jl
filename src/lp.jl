@@ -20,18 +20,11 @@ The returned object is of type `MatchingResult`.
 """
 function maximum_weight_maximal_matching end
 
-function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::Dict{Edge,T}, cutoff::R) where {T<:Real, R<:Real}
-    wnew = Dict{Edge,T}()
-    for (e,x) in w
-        if x >= cutoff
-            wnew[e] = x
-        end
-    end
-    return maximum_weight_maximal_matching(g, solver, wnew)
+function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
+    return maximum_weight_maximal_matching(g, solver, cutoff_weights(w, cutoff))
 end
 
-
-function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::Dict{Edge,T}) where {T<:Real}
+function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}) where {T<:Real}
 # TODO support for graphs with zero degree nodes
 # TODO apply separately on each connected component
     bpmap = bipartite_map(g)
@@ -44,10 +37,15 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
 
     nedg = 0
     edgemap = Dict{Edge,Int}()
-    for (e,_) in w
-        nedg += 1
-        edgemap[e] = nedg
-        edgemap[reverse(e)] = nedg
+
+    for j in 1:size(w,2)
+        for i in 1:size(w,1)
+            if w[i,j] > 0.0
+                nedg += 1
+                edgemap[Edge(i,j)] = nedg
+                edgemap[Edge(j,i)] = nedg
+            end
+        end
     end
 
     model = Model(solver=solver)
@@ -78,7 +76,7 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
         end
     end
 
-    @objective(model, Max, sum(c * x[edgemap[e]] for (e,c) = w))
+    @objective(model, Max, sum(w[src(e),dst(e)] * x[edgemap[e]] for e in keys(edgemap)))
 
     status = solve(model)
     status != :Optimal && error("JuMP solver failed to find optimal solution.")
@@ -90,7 +88,7 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
 
     mate = fill(-1, nv(g))
     for e in edges(g)
-        if haskey(w, e)
+        if w[src(e),dst(e)] > zero(T)
             inmatch = convert(Bool, sol[edgemap[e]])
             if inmatch
                 mate[src(e)] = dst(e)
@@ -100,4 +98,19 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
     end
 
     return MatchingResult(cost, mate)
+end
+
+"""
+    cutoff_weights copies the weight matrix with all elements below cutoff set to 0
+"""
+function cutoff_weights(w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
+    wnew = copy(w)
+    for j in 1:size(w,2)
+        for i in 1:size(w,1)
+            if wnew[i,j] < cutoff
+                wnew[i,j] = zero(T)
+            end
+        end
+    end
+    wnew
 end

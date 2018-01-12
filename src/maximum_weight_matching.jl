@@ -23,30 +23,30 @@ function maximum_weight_matching end
 
 function maximum_weight_matching(g::Graph,
           solver::AbstractMathProgSolver,
-          w::Dict{Edge,T} = Dict{Edge,Int64}(i => 1 for i in collect(edges(g)))) where {T <:Real}
+          w::AbstractMatrix{T} = default_weights(g)) where {T <:Real}
 
     model = Model(solver = solver)
     n = nv(g)
     edge_list = collect(edges(g))
 
     # put the edge weights in w in the right order to be compatible with edge_list
-    for edge in keys(w)
-      redge = reverse(edge)
-      if !is_ordered(edge) && !haskey(w, redge) # replace i=>j by j=>i if necessary.
-        w[redge] = w[edge]
+    for j in 1:n
+      for i in 1:n
+        if i > j  && w[i,j] > zero(T) && w[j,i] < w[i,j]
+          w[j,i] = w[i,j]
+        end
+        if Edge(i,j) ∉ edge_list
+          w[i,j] = zero(T)
+        end
       end
     end
-
-    if setdiff(edge_list, keys(w)) != [] # If some edges do not have a key in w.
-      error("Some edge weights are missing, check that keys i => j in w satisfy i <= j")
-    end
-
+    
     if is_bipartite(g)
       @variable(model, x[edge_list] >= 0) # no need to enforce integrality
     else
       @variable(model, x[edge_list] >= 0, Int) # requires MIP solver
     end
-    @objective(model, Max, sum(x[edge]*w[edge] for edge in edge_list))
+    @objective(model, Max, sum(x[e]*w[src(e),dst(e)] for e in edge_list))
     @constraint(model, c1[i=1:n],
                 sum(x[Edge(i,j)] for j=filter(l -> l > i, neighbors(g,i))) +
                 sum(x[Edge(j,i)] for j=filter(l -> l <= i, neighbors(g,i)))
@@ -70,4 +70,13 @@ function dict_to_arr(n::Int64, solution::JuMP.JuMPArray{T,1,Tuple{Array{E,1}}}) 
     end
   end
   return mate
+end
+
+
+function default_weights(g::G) where {G<:AbstractGraph}
+  m = spzeros(nv(g),nv(g))
+  for e in edges(g)
+    m[src(e),dst(e)] = 1
+  end
+  return m
 end
