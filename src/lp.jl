@@ -20,19 +20,18 @@ The returned object is of type `MatchingResult`.
 """
 function maximum_weight_maximal_matching end
 
-function maximum_weight_maximal_matching(g::Graph, w::Dict{Edge,T}, cutoff; solver = GLPKSolverMIP) where {T<:Real}
+function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::Dict{Edge,T}, cutoff::R) where {T<:Real, R<:Real}
     wnew = Dict{Edge,T}()
     for (e,x) in w
         if x >= cutoff
             wnew[e] = x
         end
     end
-
-    return maximum_weight_maximal_matching(g, wnew)
+    return maximum_weight_maximal_matching(g, solver, wnew)
 end
 
 
-function maximum_weight_maximal_matching(g::Graph, w::Dict{Edge,T}; solver = GLPKSolverMIP) where {T<:Real}
+function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::Dict{Edge,T}) where {T<:Real}
 # TODO support for graphs with zero degree nodes
 # TODO apply separately on each connected component
     bpmap = bipartite_map(g)
@@ -51,7 +50,7 @@ function maximum_weight_maximal_matching(g::Graph, w::Dict{Edge,T}; solver = GLP
         edgemap[reverse(e)] = nedg
     end
 
-    model = Model(solver=solver())
+    model = Model(solver=solver)
     @variable(model, x[1:length(w)] >= 0)
 
     for i in v1

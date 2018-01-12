@@ -24,9 +24,8 @@ end
 import BlossomV
 include("blossomv.jl")
 
-using GLPKMathProgInterface: GLPKSolverMIP
-
 using JuMP
+using MathProgBase: AbstractMathProgSolver
 include("lp.jl")
 include("maximum_weight_matching.jl")
 
