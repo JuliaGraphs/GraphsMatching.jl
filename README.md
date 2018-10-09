@@ -6,7 +6,7 @@
 
 [![codecov](https://codecov.io/gh/JuliaGraphs/LightGraphsMatching.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGraphs/LightGraphsMatching.jl)
 
-Matching algorithms on top of [LightGraphs](https://github.com/JuliaGraphs/LightGraphs).
+Matching algorithms on top of [LightGraphs](https://github.com/JuliaGraphs/LightGraphs.jl).
 
 ## Usage
 
