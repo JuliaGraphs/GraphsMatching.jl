@@ -1,5 +1,5 @@
 """
-maximum_weight_matching{T <:Real}(g::Graph, w::Dict{Edge,T} = Dict{Edge,Int64}())
+maximum_weight_matching(g::Graph, w::Dict{Edge,Real} -> Dict{Edge,Int64}
 
 Given a graph `g` and an edgemap `w` containing weights associated to edges,
 returns a matching with the maximum total weight.
@@ -23,7 +23,7 @@ function maximum_weight_matching end
 
 function maximum_weight_matching(g::Graph,
           solver::AbstractMathProgSolver,
-          w::AbstractMatrix{T} = default_weights(g)) where {T <:Real}
+          w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
 
     model = Model(solver = solver)
     n = nv(g)
@@ -32,11 +32,11 @@ function maximum_weight_matching(g::Graph,
     # put the edge weights in w in the right order to be compatible with edge_list
     for j in 1:n
       for i in 1:n
-        if i > j  && w[i,j] > zero(T) && w[j,i] < w[i,j]
+        if i > j  && w[i,j] > zero(U) && w[j,i] < w[i,j]
           w[j,i] = w[i,j]
         end
         if Edge(i,j) ∉ edge_list
-          w[i,j] = zero(T)
+          w[i,j] = zero(U)
         end
       end
     end
@@ -47,26 +47,22 @@ function maximum_weight_matching(g::Graph,
       @variable(model, x[edge_list] >= 0, Int) # requires MIP solver
     end
     @objective(model, Max, sum(x[e]*w[src(e),dst(e)] for e in edge_list))
-    @constraint(model, c1[i=1:n],
-                sum(x[Edge(i,j)] for j=filter(l -> l > i, neighbors(g,i))) +
-                sum(x[Edge(j,i)] for j=filter(l -> l <= i, neighbors(g,i)))
-                <= 1)
 
+    @constraint(model, c1[i=1:n], sum(x[Edge(minmax(i,j))] for j in neighbors(g,i)) <= 1)
     status = solve(model)
     solution = getvalue(x)
     cost = getobjectivevalue(model)
     ## TODO: add the option of returning the solve status as part of the MatchingResult type.
-    return MatchingResult(cost, dict_to_arr(n, solution))
+    return MatchingResult(cost, dict_to_arr(n, solution, edge_list))
 end
 
 """ Returns an array of mates from a dictionary that maps edges to {0,1} """
-function dict_to_arr(n::Int64, solution::JuMP.JuMPArray{T,1,Tuple{Array{E,1}}}) where {T<: Real, E<: Edge}
+function dict_to_arr(n::Int64, solution::JuMP.JuMPArray{U,1,Tuple{Array{E,1}}}, edge_list::AbstractVector{E}) where {U<: Real, E<: Edge}
   mate = fill(-1,n)
-  for i in keys(solution)
-    key = i[1] # i is a tuple with 1 element.
-    if solution[key] >= 1 - 1e-5 # Some tolerance to numerical approximations by the solver.
-        mate[src(key)] = dst(key)
-        mate[dst(key)] = src(key)
+  for e in edge_list
+    if solution[e] >= 1 - 1e-5 # Some tolerance to numerical approximations by the solver.
+        mate[src(e)] = dst(e)
+        mate[dst(e)] = src(e)
     end
   end
   return mate

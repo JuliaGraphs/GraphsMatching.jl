@@ -1,6 +1,6 @@
 """
-    maximum_weight_maximal_matching{T<:Real}(g, w::Dict{Edge,T})
-    maximum_weight_maximal_matching{T<:Real}(g, w::Dict{Edge,T}, cutoff)
+    maximum_weight_maximal_matching(g, w::Dict{Edge,Real})
+    maximum_weight_maximal_matching(g, w::Dict{Edge,Real}, cutoff)
 
 Given a bipartite graph `g` and an edgemap `w` containing weights associated to edges,
 returns a matching with the maximum total weight among the ones containing the
@@ -20,17 +20,17 @@ The returned object is of type `MatchingResult`.
 """
 function maximum_weight_maximal_matching end
 
-function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
+function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{U}, cutoff::R) where {U<:Real, R<:Real}
     return maximum_weight_maximal_matching(g, solver, cutoff_weights(w, cutoff))
 end
 
-function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}) where {T<:Real}
+function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{U}) where {U<:Real}
 # TODO support for graphs with zero degree nodes
 # TODO apply separately on each connected component
     bpmap = bipartite_map(g)
     length(bpmap) != nv(g) && error("Graph is not bipartite")
-    v1 = findin(bpmap, 1)
-    v2 = findin(bpmap, 2)
+    v1 = findall(isequal(1), bpmap)
+    v2 = findall(isequal(2), bpmap)
     if length(v1) > length(v2)
         v1, v2 = v2, v1
     end
@@ -88,7 +88,7 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
 
     mate = fill(-1, nv(g))
     for e in edges(g)
-        if w[src(e),dst(e)] > zero(T)
+        if w[src(e),dst(e)] > zero(U)
             inmatch = convert(Bool, sol[edgemap[e]])
             if inmatch
                 mate[src(e)] = dst(e)
@@ -103,12 +103,12 @@ end
 """
     cutoff_weights copies the weight matrix with all elements below cutoff set to 0
 """
-function cutoff_weights(w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
+function cutoff_weights(w::AbstractMatrix{U}, cutoff::R) where {U<:Real, R<:Real}
     wnew = copy(w)
     for j in 1:size(w,2)
         for i in 1:size(w,1)
             if wnew[i,j] < cutoff
-                wnew[i,j] = zero(T)
+                wnew[i,j] = zero(U)
             end
         end
     end
