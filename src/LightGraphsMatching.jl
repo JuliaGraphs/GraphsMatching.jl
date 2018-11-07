@@ -7,8 +7,9 @@ using SparseArrays: spzeros
 using JuMP
 using MathProgBase: AbstractMathProgSolver
 import BlossomV # 'using BlossomV'  leads to naming conflicts with JuMP
+using Hungarian
 
-export MatchingResult, maximum_weight_matching, maximum_weight_maximal_matching, minimum_weight_perfect_matching
+export MatchingResult, maximum_weight_matching, maximum_weight_maximal_matching, minimum_weight_perfect_matching, HungarianAlgorithm, LPAlgorithm
 
 """
     struct MatchingResult{U}
@@ -31,6 +32,7 @@ end
 include("lp.jl")
 include("maximum_weight_matching.jl")
 include("blossomv.jl")
+include("hungarian.jl")
+include("maximum_weight_maximal_matching.jl")
 
 end # module
-

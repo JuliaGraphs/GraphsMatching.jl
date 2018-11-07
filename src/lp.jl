@@ -1,30 +1,8 @@
-"""
-    maximum_weight_maximal_matching(g, w::Dict{Edge,Real})
-    maximum_weight_maximal_matching(g, w::Dict{Edge,Real}, cutoff)
-
-Given a bipartite graph `g` and an edgemap `w` containing weights associated to edges,
-returns a matching with the maximum total weight among the ones containing the
-greatest number of edges.
-
-Edges in `g` not present in `w` will not be considered for the matching.
-
-The algorithm relies on a linear relaxation on of the matching problem, which is
-guaranteed to have integer solution on bipartite graps.
-
-Eventually a `cutoff` argument can be given, to reduce computational times
-excluding edges with weights lower than the cutoff.
-
-The package JuMP.jl and one of its supported solvers is required.
-
-The returned object is of type `MatchingResult`.
-"""
-function maximum_weight_maximal_matching end
-
-function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{U}, cutoff::R) where {U<:Real, R<:Real}
-    return maximum_weight_maximal_matching(g, solver, cutoff_weights(w, cutoff))
+function maximum_weight_maximal_matching_lp(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
+    return maximum_weight_maximal_matching_lp(g, solver, cutoff_weights(w, cutoff))
 end
 
-function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{U}) where {U<:Real}
+function maximum_weight_maximal_matching_lp(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}) where {T<:Real}
 # TODO support for graphs with zero degree nodes
 # TODO apply separately on each connected component
     bpmap = bipartite_map(g)
@@ -88,7 +66,7 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
 
     mate = fill(-1, nv(g))
     for e in edges(g)
-        if w[src(e),dst(e)] > zero(U)
+        if w[src(e),dst(e)] > zero(T)
             inmatch = convert(Bool, sol[edgemap[e]])
             if inmatch
                 mate[src(e)] = dst(e)
@@ -98,19 +76,4 @@ function maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolve
     end
 
     return MatchingResult(cost, mate)
-end
-
-"""
-    cutoff_weights copies the weight matrix with all elements below cutoff set to 0
-"""
-function cutoff_weights(w::AbstractMatrix{U}, cutoff::R) where {U<:Real, R<:Real}
-    wnew = copy(w)
-    for j in 1:size(w,2)
-        for i in 1:size(w,1)
-            if wnew[i,j] < cutoff
-                wnew[i,j] = zero(U)
-            end
-        end
-    end
-    wnew
 end

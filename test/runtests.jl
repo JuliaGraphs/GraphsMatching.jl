@@ -6,20 +6,6 @@ using LinearAlgebra: I
 
 @testset "LightGraphsMatching" begin
 
-g = CompleteGraph(4)
-w = LightGraphsMatching.default_weights(g)
-@test all((w + w') .≈ ones(4,4) - Matrix(I, 4,4))
-
-w1 = [
-      1 3
-      5 1
-     ]
-w0 = [
-      0 3
-      5 0
-     ]
-@test all(w0 .≈ LightGraphsMatching.cutoff_weights(w1, 2))
-
 @testset "maximum_weight_matching" begin
     g = CompleteGraph(3)
     w = [
@@ -105,7 +91,7 @@ end
     w[1,4] = 1.
     w[2,3] = 2.
     w[2,4] = 11.
-    match = maximum_weight_maximal_matching(g, CbcSolver(), w)
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=CbcSolver())
     @test match.weight ≈ 21
     @test match.mate[1] == 3
     @test match.mate[3] == 1
@@ -118,7 +104,7 @@ end
     w[1,4] = 0.5
     w[2,3] = 11
     w[2,4] = 1
-    match = maximum_weight_maximal_matching(g, CbcSolver(), w)
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=CbcSolver())
     @test match.weight ≈ 11.5
     @test match.mate[1] == 4
     @test match.mate[4] == 1
@@ -133,7 +119,7 @@ end
     w[2,4] = 1
     w[2,5] = -1
     w[2,6] = -1
-    match = maximum_weight_maximal_matching(g,CbcSolver(),w,0)
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=CbcSolver(), cutoff=0)
     @test match.weight ≈ 11.5
     @test match.mate[1] == 4
     @test match.mate[4] == 1
@@ -148,7 +134,7 @@ end
     w[1,6] = 1
     w[1,5] = -1
 
-    match = maximum_weight_maximal_matching(g,CbcSolver(),w,0)
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=CbcSolver(), cutoff=0)
     @test match.weight ≈ 12
     @test match.mate[1] == 6
     @test match.mate[2] == 5
@@ -156,6 +142,45 @@ end
     @test match.mate[4] == -1
     @test match.mate[5] == 2
     @test match.mate[6] == 1
+    
+    
+    g = CompleteBipartiteGraph(2, 2)
+    w = zeros(4, 4)
+    w[1, 3] = 10.
+    w[1, 4] = 1.
+    w[2, 3] = 2.
+    w[2, 4] = 11.
+    match = maximum_weight_maximal_matching(g, w, algorithm=HungarianAlgorithm())
+    @test match.weight ≈ 21
+    @test match.mate[1] == 3
+    @test match.mate[3] == 1
+    @test match.mate[2] == 4
+    @test match.mate[4] == 2
+
+    g = CompleteGraph(3)
+    w = zeros(3, 3)
+    @test ! is_bipartite(g)
+    @test_throws ErrorException maximum_weight_maximal_matching(g, w, algorithm=HungarianAlgorithm())
+
+    g = CompleteBipartiteGraph(2, 4)
+    w = zeros(6, 6)
+    w[1, 3] = 10
+    w[1, 4] = 0.5
+    w[2, 3] = 11
+    w[2, 4] = 1
+    match = maximum_weight_maximal_matching(g, w, algorithm=HungarianAlgorithm())
+    @test match.weight ≈ 11.5
+
+    g = Graph(4)
+    add_edge!(g, 1, 3)
+    add_edge!(g, 1, 4)
+    add_edge!(g, 2, 4)
+    w = zeros(4, 4)
+    w[1, 3] = 1
+    w[1, 4] = 3 
+    w[2, 4] = 1
+    match = maximum_weight_maximal_matching(g, w, algorithm=HungarianAlgorithm())
+    @test match.weight ≈ 2 
 
 end
 
@@ -214,8 +239,8 @@ end
     @test match.weight ≈ -11.5
 
 
-    g =CompleteGraph(4)
-    w =Dict{Edge,Float64}()
+    g = CompleteGraph(4)
+    w = Dict{Edge,Float64}()
     w[Edge(1,3)] = 10
     w[Edge(1,4)] = 0.5
     w[Edge(2,3)] = 11
