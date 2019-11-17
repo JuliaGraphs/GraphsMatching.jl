@@ -5,7 +5,8 @@ using LightGraphs
 using SparseArrays: spzeros
 
 using JuMP
-using MathProgBase: AbstractMathProgSolver
+using MathOptInterface
+const MOI = MathOptInterface
 import BlossomV # 'using BlossomV'  leads to naming conflicts with JuMP
 using Hungarian
 

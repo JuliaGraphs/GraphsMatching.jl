@@ -22,10 +22,10 @@ Returns MatchingResult containing:
 function maximum_weight_matching end
 
 function maximum_weight_matching(g::Graph,
-          solver::AbstractMathProgSolver,
+          solver::JuMP.OptimizerFactory,
           w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
 
-    model = Model(solver = solver)
+    model = Model(with_optimizer(solver))
     n = nv(g)
     edge_list = collect(edges(g))
 
@@ -49,15 +49,16 @@ function maximum_weight_matching(g::Graph,
     @objective(model, Max, sum(x[e]*w[src(e),dst(e)] for e in edge_list))
 
     @constraint(model, c1[i=1:n], sum(x[Edge(minmax(i,j))] for j in neighbors(g,i)) <= 1)
-    status = solve(model)
-    solution = getvalue(x)
-    cost = getobjectivevalue(model)
-    ## TODO: add the option of returning the solve status as part of the MatchingResult type.
+    optimize!(model)
+    status = JuMP.termination_status(model)
+    status != MOI.OPTIMAL && error("JuMP solver failed to find optimal solution.")
+    solution = value.(x)
+    cost = objective_value(model)
     return MatchingResult(cost, dict_to_arr(n, solution, edge_list))
 end
 
 """ Returns an array of mates from a dictionary that maps edges to {0,1} """
-function dict_to_arr(n::Int64, solution::JuMP.JuMPArray{U,1,Tuple{Array{E,1}}}, edge_list::AbstractVector{E}) where {U<: Real, E<: Edge}
+function dict_to_arr(n::Int64, solution::JuMP.Containers.DenseAxisArray{U,1,Tuple{Array{E,1}}}, edge_list::AbstractVector{E}) where {U<: Real, E<: Edge}
   mate = fill(-1,n)
   for e in edge_list
     if solution[e] >= 1 - 1e-5 # Some tolerance to numerical approximations by the solver.

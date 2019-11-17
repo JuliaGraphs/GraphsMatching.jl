@@ -16,8 +16,8 @@ function maximum_weight_maximal_matching(
     algorithm::LPAlgorithm, 
     solver = nothing
 ) where {T<:Real}
-    if ! isa(solver, AbstractMathProgSolver)
-        error("The keyword argument solver must be an AbstractMathProgSolver, as accepted by JuMP.")
+    if ! isa(solver, JuMP.OptimizerFactory)
+        error("The keyword argument solver must be an JuMP.OptimizerFactory, as accepted by JuMP.")
     end
 
     return maximum_weight_maximal_matching_lp(g, solver, w)
@@ -96,4 +96,4 @@ function cutoff_weights(w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real
     wnew
 end
 
-@deprecate maximum_weight_maximal_matching(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real} maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), cutoff=cutoff, solver=solver)
+@deprecate maximum_weight_maximal_matching(g::Graph, solver::JuMP.OptimizerFactory, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real} maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), cutoff=cutoff, solver=solver)

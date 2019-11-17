@@ -1,8 +1,8 @@
-function maximum_weight_maximal_matching_lp(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
+function maximum_weight_maximal_matching_lp(g::Graph, solver::JuMP.OptimizerFactory, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real}
     return maximum_weight_maximal_matching_lp(g, solver, cutoff_weights(w, cutoff))
 end
 
-function maximum_weight_maximal_matching_lp(g::Graph, solver::AbstractMathProgSolver, w::AbstractMatrix{T}) where {T<:Real}
+function maximum_weight_maximal_matching_lp(g::Graph, solver::JuMP.OptimizerFactory, w::AbstractMatrix{T}) where {T<:Real}
 # TODO support for graphs with zero degree nodes
 # TODO apply separately on each connected component
     bpmap = bipartite_map(g)
@@ -26,7 +26,7 @@ function maximum_weight_maximal_matching_lp(g::Graph, solver::AbstractMathProgSo
         end
     end
 
-    model = Model(solver=solver)
+    model = Model(solver)
     @variable(model, x[1:length(w)] >= 0)
 
     for i in v1
@@ -56,13 +56,14 @@ function maximum_weight_maximal_matching_lp(g::Graph, solver::AbstractMathProgSo
 
     @objective(model, Max, sum(w[src(e),dst(e)] * x[edgemap[e]] for e in keys(edgemap)))
 
-    status = solve(model)
-    status != :Optimal && error("JuMP solver failed to find optimal solution.")
-    sol = getvalue(x)
+    optimize!(model)
+    status = JuMP.termination_status(model)
+    status != MOI.OPTIMAL  && error("JuMP solver failed to find optimal solution.")
+    sol = JuMP.value.(x)
 
     all(Bool[s == 1 || s == 0 for s in sol]) || error("Found non-integer solution.")
 
-    cost = getobjectivevalue(model)
+    cost = JuMP.objective_value(model)
 
     mate = fill(-1, nv(g))
     for e in edges(g)

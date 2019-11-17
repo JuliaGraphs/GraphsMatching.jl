@@ -16,8 +16,8 @@ containing the `mate` and `weight` fields.
 ### Perfect matching
 
 ```julia
-g =CompleteGraph(4)
-w =Dict{Edge,Float64}()
+g = complete_graph(4)
+w = Dict{Edge,Float64}()
 w[Edge(1,3)] = 10
 w[Edge(1,4)] = 0.5
 w[Edge(2,3)] = 11
@@ -36,17 +36,15 @@ match = minimum_weight_perfect_matching(g, w, 50)
 ### Maximum weight matching
 
 A maximum weight matching is solved as a Linear Programming
-problem and requires a LP solver respecting the [MathProgBase](https://github.com/JuliaOpt/MathProgBase.jl) solver
-interface. See MathProgBase 
-[documentation](http://mathprogbasejl.readthedocs.io/en/latest/solvers.html) for more details.
+problem and requires an LP optimizer for bipartite graphs and a MILP solver for general graphs respecting the [MathOptInterface](https://github.com/JuliaOpt/MathOptInterface.jl) optimizer interface. A list of solvers can be found in the [JuMP documentation](http://www.juliaopt.org/JuMP.jl/v0.19.0/installation/#Getting-Solvers-1).
 
 ```julia
-using Cbc: CbcSolver #import a LP solver
-g = CompleteGraph(3)
+using JuMP, Cbc #import a MILP solver
+g = complete_graph(3)
 w = zeros(3,3)
 w[1,2] = 1
 w[3,2] = 1
 w[1,3] = 1
-match = maximum_weight_matching(g,CbcSolver(),w)
+match = maximum_weight_matching(g,with_optimizer(Cbc.Optimizer, logLevel=0),w)
 # match.weight ≈ 1
 ```
