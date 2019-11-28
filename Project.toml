@@ -1,7 +1,7 @@
 name = "LightGraphsMatching"
 uuid = "e2bbde1f-9811-4914-b1d4-c88a7088c08f"
-authors = ["Mathieu Besançon <mathieu.besancon@gmail.com>"]
-version = "0.1.0"
+authors = ["JuliaGraphs"]
+version = "0.2.0"
 
 [deps]
 BlossomV = "6c721016-9dae-5d90-abf6-67daaccb2332"
