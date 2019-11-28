@@ -1,5 +1,5 @@
 name = "LightGraphsMatching"
-uuid = "e2bbde1f-9811-4914-b1d4-c88a7088c08f"
+uuid = "160ba089-64bf-5ba7-9e14-98ab1d9bcb0a"
 authors = ["JuliaGraphs"]
 version = "0.2.0"
 
