@@ -6,7 +6,7 @@ function maximum_weight_maximal_matching_hungarian(g::Graph,
   # Determine the bipartition of the graph. 
   bipartition = bipartite_map(g)
   if length(bipartition) != n # Equivalent to !is_bipartite(g), but reuses the results of the previous function call.
-    error("The Hungarian algorithm only works for bipartite graphs; otherwise, prefer the Blossom algorithm (not yet available in LightGraphsMatching")
+    error("The Hungarian algorithm only works for bipartite graphs; otherwise, prefer the Blossom algorithm (not yet available in GraphsMatching")
   end
   n_first = count(bipartition .== 1)
   n_second = count(bipartition .== 2)

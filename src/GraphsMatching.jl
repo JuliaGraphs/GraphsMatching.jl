@@ -1,6 +1,6 @@
-module LightGraphsMatching
+module GraphsMatching
 
-using LightGraphs
+using Graphs
 
 using SparseArrays: spzeros
 
