@@ -1,6 +1,6 @@
-site_name:        LightGraphsMatching.jl
-repo_url:         https://github.com/JuliaGraphs/LightGraphsMatching.jl
-site_description: Documentation for LightGraphsMatching, the JuliaGraphs package to solve matching problems
+site_name:        GraphsMatching.jl
+repo_url:         https://github.com/JuliaGraphs/GraphsMatching.jl
+site_description: Documentation for GraphsMatching, the JuliaGraphs package to solve matching problems
 site_author:      JuliaGraphs
 
 theme: material

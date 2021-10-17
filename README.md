@@ -1,12 +1,12 @@
-# LightGraphsMatching
+# GraphsMatching
 
-[![Build Status](https://travis-ci.org/JuliaGraphs/LightGraphsMatching.jl.svg?branch=master)](https://travis-ci.org/JuliaGraphs/LightGraphsMatching.jl)
+[![Build Status](https://travis-ci.org/JuliaGraphs/GraphsMatching.jl.svg?branch=master)](https://travis-ci.org/JuliaGraphs/GraphsMatching.jl)
 
-[![Coverage Status](https://coveralls.io/repos/github/JuliaGraphs/LightGraphsMatching.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaGraphs/LightGraphsMatching.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaGraphs/GraphsMatching.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaGraphs/GraphsMatching.jl?branch=master)
 
-[![codecov](https://codecov.io/gh/JuliaGraphs/LightGraphsMatching.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGraphs/LightGraphsMatching.jl)
+[![codecov](https://codecov.io/gh/JuliaGraphs/GraphsMatching.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGraphs/GraphsMatching.jl)
 
-Matching algorithms on top of [LightGraphs](https://github.com/JuliaGraphs/LightGraphs.jl).
+Matching algorithms on top of [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl).
 
 ## Usage
 

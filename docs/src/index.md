@@ -1,26 +1,24 @@
- # LightGraphsMatching.jl: matching algorithms for LightGraphs
+ # GraphsMatching.jl: matching algorithms for Graphs.jl
 
 ```@meta
-CurrentModule = LightGraphsMatching
+CurrentModule = GraphsMatching
 DocTestSetup = quote
-    using LightGraphsMatching
-    import LightGraphs
-    const lg = LightGraphs
+    using GraphsMatching
+    import Graphs
 end
 ```
 
-This is the documentation page for `LightGraphsMatching`. 
-In all documentation examples, we assume LightGraphsMatching has been imported into scope
-and that LightGraphs is available with the alias `lg`:
+This is the documentation page for `GraphsMatching`.
+In all documentation examples, we assume GraphsMatching has been imported into scope
+and that Graphs.jl is imported:
 ```julia
-using LightGraphsMatching
-import LightGraphs
-const lg = LightGraphs
+using GraphsMatching
+import Graphs
 ```
 
 ```@autodocs
-Modules = [LightGraphsMatching]
-Pages = ["LightGraphsMatching.jl", "maximum_weight_matching.jl", "lp.jl", "blossomv.jl"]
+Modules = [GraphsMatching]
+Pages = ["GraphsMatching.jl", "maximum_weight_matching.jl", "lp.jl", "blossomv.jl"]
 Order = [:function, :type]
 ```
 

@@ -1,11 +1,11 @@
-using LightGraphs
-using LightGraphsMatching
+using Graphs
+using GraphsMatching
 using Test
 using Cbc
 using JuMP
 using LinearAlgebra: I
 
-@testset "LightGraphsMatching" begin
+@testset "GraphsMatching" begin
 
 @testset "maximum_weight_matching" begin
     g = complete_graph(3)
