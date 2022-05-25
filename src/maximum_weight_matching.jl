@@ -22,10 +22,10 @@ Returns MatchingResult containing:
 function maximum_weight_matching end
 
 function maximum_weight_matching(g::Graph,
-          solver::JuMP.OptimizerFactory,
+          solver,
           w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
 
-    model = Model(with_optimizer(solver))
+    model = Model(solver)
     n = nv(g)
     edge_list = collect(edges(g))
 
@@ -40,7 +40,7 @@ function maximum_weight_matching(g::Graph,
         end
       end
     end
-    
+
     if is_bipartite(g)
       @variable(model, x[edge_list] >= 0) # no need to enforce integrality
     else

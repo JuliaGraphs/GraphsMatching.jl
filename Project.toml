@@ -1,7 +1,7 @@
 name = "GraphsMatching"
 uuid = "c3af3a8c-b79e-4b01-bf44-c718d7e0e0d6"
 authors = ["JuliaGraphs"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 BlossomV = "6c721016-9dae-5d90-abf6-67daaccb2332"
@@ -14,10 +14,10 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 BlossomV = "0.4"
-Graphs = "1.4.0"
-Hungarian = "0.4"
-JuMP = "0.20"
-MathOptInterface = "0.9"
+Graphs = "1.4, 1.7"
+Hungarian = "0.4, 0.6"
+JuMP = "1"
+MathOptInterface = "1"
 julia = "1"
 
 [extras]
