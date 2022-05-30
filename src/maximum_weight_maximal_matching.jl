@@ -11,16 +11,13 @@ Forces the maximum_weight_maximal_matching function to use a linear programming 
 struct LPAlgorithm <: AbstractMaximumWeightMaximalMatchingAlgorithm end
 
 function maximum_weight_maximal_matching(
-    g::Graph, 
-    w::AbstractMatrix{T}, 
-    algorithm::LPAlgorithm, 
-    solver = nothing
+    g::Graph,
+    w::AbstractMatrix{T},
+    algorithm::LPAlgorithm,
+    optimizer = nothing
 ) where {T<:Real}
-    if ! isa(solver, JuMP.OptimizerFactory)
-        error("The keyword argument solver must be an JuMP.OptimizerFactory, as accepted by JuMP.")
-    end
 
-    return maximum_weight_maximal_matching_lp(g, solver, w)
+    return maximum_weight_maximal_matching_lp(g, optimizer, w)
 end
 
 """
@@ -30,10 +27,10 @@ Forces the maximum_weight_maximal_matching function to use the Hungarian algorit
 struct HungarianAlgorithm <: AbstractMaximumWeightMaximalMatchingAlgorithm end
 
 function maximum_weight_maximal_matching(
-    g::Graph, 
-    w::AbstractMatrix{T}, 
-    algorithm::HungarianAlgorithm, 
-    solver = nothing
+    g::Graph,
+    w::AbstractMatrix{T},
+    algorithm::HungarianAlgorithm,
+    optimizer = nothing
 ) where {T<:Real}
     return maximum_weight_maximal_matching_hungarian(g, w)
 end
@@ -50,24 +47,24 @@ Edges in `g` not present in `w` will not be considered for the matching.
 A `cutoff` keyword argument can be given, to reduce computational times
 excluding edges with weights lower than the cutoff.
 
-Finally, a specific algorithm can be chosen (`algorithm` keyword argument); 
-each algorithm has specific dependencies. For instance: 
+Finally, a specific algorithm can be chosen (`algorithm` keyword argument);
+each algorithm has specific dependencies. For instance:
 
-- If `algorithm=HungarianAlgorithm()` (the default), the package Hungarian.jl is used. 
-  This algorithm is always polynomial in time, with complexity O(n³). 
-- If `algorithm=LPAlgorithm()`, the package JuMP.jl and one of its supported solvers is required. 
+- If `algorithm=HungarianAlgorithm()` (the default), the package Hungarian.jl is used.
+  This algorithm is always polynomial in time, with complexity O(n³).
+- If `algorithm=LPAlgorithm()`, the package JuMP.jl and one of its supported solvers is required.
   In this case, the algorithm relies on a linear relaxation on of the matching problem, which is
-  guaranteed to have integer solution on bipartite graphs. A solver must be provided with 
-  the `solver` keyword parameter. 
+  guaranteed to have integer solution on bipartite graphs. A solver must be provided with
+  the `optimizer` keyword parameter.
 
 The returned object is of type `MatchingResult`.
 """
 function maximum_weight_maximal_matching(
-        g::Graph, 
-        w::AbstractMatrix{T}; 
+        g::Graph,
+        w::AbstractMatrix{T};
         cutoff = nothing,
-        algorithm::AbstractMaximumWeightMaximalMatchingAlgorithm = HungarianAlgorithm(), 
-        solver = nothing
+        algorithm::AbstractMaximumWeightMaximalMatchingAlgorithm = HungarianAlgorithm(),
+        optimizer = nothing
     ) where {T<:Real}
 
     if cutoff != nothing && ! isa(cutoff, Real)
@@ -75,9 +72,9 @@ function maximum_weight_maximal_matching(
     end
 
     if cutoff != nothing
-        return maximum_weight_maximal_matching(g, cutoff_weights(w, cutoff), algorithm, solver)
+        return maximum_weight_maximal_matching(g, cutoff_weights(w, cutoff), algorithm, optimizer)
     else
-        return maximum_weight_maximal_matching(g, w, algorithm, solver)
+        return maximum_weight_maximal_matching(g, w, algorithm, optimizer)
     end
 end
 
@@ -96,4 +93,4 @@ function cutoff_weights(w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real
     wnew
 end
 
-@deprecate maximum_weight_maximal_matching(g::Graph, solver::JuMP.OptimizerFactory, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real} maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), cutoff=cutoff, solver=solver)
+@deprecate maximum_weight_maximal_matching(g::Graph, optimizer, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real} maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), cutoff=cutoff, optimizer=optimizer)
