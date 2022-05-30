@@ -92,7 +92,7 @@ end
     w[1,4] = 1.
     w[2,3] = 2.
     w[2,4] = 11.
-    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0))
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), optimizer=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0))
     @test match.weight ≈ 21
     @test match.mate[1] == 3
     @test match.mate[3] == 1
@@ -105,7 +105,7 @@ end
     w[1,4] = 0.5
     w[2,3] = 11
     w[2,4] = 1
-    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0))
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), optimizer=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0))
     @test match.weight ≈ 11.5
     @test match.mate[1] == 4
     @test match.mate[4] == 1
@@ -120,7 +120,7 @@ end
     w[2,4] = 1
     w[2,5] = -1
     w[2,6] = -1
-    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0), cutoff=0)
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), optimizer=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0), cutoff=0)
     @test match.weight ≈ 11.5
     @test match.mate[1] == 4
     @test match.mate[4] == 1
@@ -135,7 +135,7 @@ end
     w[1,6] = 1
     w[1,5] = -1
 
-    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), solver=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0), cutoff=0)
+    match = maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), optimizer=optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0), cutoff=0)
     @test match.weight ≈ 12
     @test match.mate[1] == 6
     @test match.mate[2] == 5

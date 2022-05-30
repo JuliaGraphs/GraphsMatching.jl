@@ -22,10 +22,10 @@ Returns MatchingResult containing:
 function maximum_weight_matching end
 
 function maximum_weight_matching(g::Graph,
-          solver,
+          optimizer,
           w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
 
-    model = Model(solver)
+    model = Model(optimizer)
     n = nv(g)
     edge_list = collect(edges(g))
 

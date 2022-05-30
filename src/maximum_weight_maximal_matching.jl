@@ -14,10 +14,10 @@ function maximum_weight_maximal_matching(
     g::Graph,
     w::AbstractMatrix{T},
     algorithm::LPAlgorithm,
-    solver = nothing
+    optimizer = nothing
 ) where {T<:Real}
 
-    return maximum_weight_maximal_matching_lp(g, solver, w)
+    return maximum_weight_maximal_matching_lp(g, optimizer, w)
 end
 
 """
@@ -30,7 +30,7 @@ function maximum_weight_maximal_matching(
     g::Graph,
     w::AbstractMatrix{T},
     algorithm::HungarianAlgorithm,
-    solver = nothing
+    optimizer = nothing
 ) where {T<:Real}
     return maximum_weight_maximal_matching_hungarian(g, w)
 end
@@ -55,7 +55,7 @@ each algorithm has specific dependencies. For instance:
 - If `algorithm=LPAlgorithm()`, the package JuMP.jl and one of its supported solvers is required.
   In this case, the algorithm relies on a linear relaxation on of the matching problem, which is
   guaranteed to have integer solution on bipartite graphs. A solver must be provided with
-  the `solver` keyword parameter.
+  the `optimizer` keyword parameter.
 
 The returned object is of type `MatchingResult`.
 """
@@ -64,7 +64,7 @@ function maximum_weight_maximal_matching(
         w::AbstractMatrix{T};
         cutoff = nothing,
         algorithm::AbstractMaximumWeightMaximalMatchingAlgorithm = HungarianAlgorithm(),
-        solver = nothing
+        optimizer = nothing
     ) where {T<:Real}
 
     if cutoff != nothing && ! isa(cutoff, Real)
@@ -72,9 +72,9 @@ function maximum_weight_maximal_matching(
     end
 
     if cutoff != nothing
-        return maximum_weight_maximal_matching(g, cutoff_weights(w, cutoff), algorithm, solver)
+        return maximum_weight_maximal_matching(g, cutoff_weights(w, cutoff), algorithm, optimizer)
     else
-        return maximum_weight_maximal_matching(g, w, algorithm, solver)
+        return maximum_weight_maximal_matching(g, w, algorithm, optimizer)
     end
 end
 
@@ -93,4 +93,4 @@ function cutoff_weights(w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real
     wnew
 end
 
-@deprecate maximum_weight_maximal_matching(g::Graph, solver, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real} maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), cutoff=cutoff, solver=solver)
+@deprecate maximum_weight_maximal_matching(g::Graph, optimizer, w::AbstractMatrix{T}, cutoff::R) where {T<:Real, R<:Real} maximum_weight_maximal_matching(g, w, algorithm=LPAlgorithm(), cutoff=cutoff, optimizer=optimizer)
