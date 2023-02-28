@@ -37,7 +37,7 @@ function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}; tmaxscale=10.) 
 
     if cmin == cmax
         # all weights are identical: _any_ pairing is a minimum weight perfect matching
-        weight = nv(g) * cmin
+        weight = nv(g) * cmin / 2
         mate = collect(reverse(vertices(g)))
         return MatchingResult(weight, mate)
     end
