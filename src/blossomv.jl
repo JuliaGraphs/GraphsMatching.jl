@@ -34,6 +34,14 @@ function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}; tmaxscale=10.) 
     wnew = Dict{E, Int32}()
     cmax = maximum(values(w))
     cmin = minimum(values(w))
+
+    if cmin == cmax
+        # all weights are identical: _any_ pairing is a minimum weight perfect matching
+        weight = nv(g) * cmin
+        mate = collect(reverse(vertices(g)))
+        return MatchingResult(weight, mate)
+    end
+    
     tmax = typemax(Int32)  / tmaxscale # /10 is kinda arbitrary,
                                 # hopefully high enough to not occur in overflow problems
     for (e, c) in w

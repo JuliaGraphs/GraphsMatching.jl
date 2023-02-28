@@ -254,6 +254,21 @@ end
     @test match.mate[2] == 3
     @test match.mate[3] == 2
     @test match.weight ≈ 11.5
+
+    # Issue #5
+    g = Graph(Graph([Edge(1,2), Edge(2,3), Edge(4,1)]))
+    w = Dict(Edge(1,2)=>2.0, Edge(2,3)=>2.0, Edge(1,4)=>2.0)
+    match = minimum_weight_perfect_matching(g, w)
+    @test match.mate == [4,3,2,1]
+    @test match.weight == 4.0
+
+    g = Graph([Edge(1,2)])
+    wFloat = Dict(Edge(1,2) = 2.0)
+    wInt = Dict(Edge(1,2) = 2)
+    matchFloat = minimum_weight_perfect_matching(g, wFloat)
+    matchInt = minimum_weight_perfect_matching(g, wInt)
+    @test matchFloat.mate == matchInt.mate
+    @test matchFloat.weight == matchInt.weight
 end
 
 
