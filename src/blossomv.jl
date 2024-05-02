@@ -68,3 +68,22 @@ function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}) where {U<:Integ
     end
     return MatchingResult(totweight, mate)
 end
+
+function minimum_weight_perfect_matching(g::Graph, w::AbstractMatrix{U}, cutoff, kws...) where {U <: Real}
+	wnew = Dict{Edge, U}()
+	for e in edges(g)
+		c = w[src(e), dst(e)]
+		if c <= cutoff
+			wnew[e] = c
+		end
+	end
+	return minimum_weight_perfect_matching(g, wnew; kws...)
+end
+
+function minimum_weight_perfect_matching(g::Graph, w::AbstractMatrix{U} = default_weights(g), kws...) where {U <: Real}
+	wnew = Dict{Edge, U}()
+	for e in edges(g)
+		wnew[e] = w[src(e), dst(e)]
+	end
+	return minimum_weight_perfect_matching(g, wnew; kws...)
+end
