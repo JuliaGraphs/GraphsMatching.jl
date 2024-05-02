@@ -1,6 +1,6 @@
 """
-    minimum_weight_perfect_matching(g, w::Dict{Edge,Real})
-    minimum_weight_perfect_matching(g, w::Dict{Edge,Real}, cutoff)
+	minimum_weight_perfect_matching(g, w::Dict{Edge,Real})
+	minimum_weight_perfect_matching(g, w::Dict{Edge,Real}, cutoff)
 
 Given a graph `g` and an edgemap `w` containing weights associated to edges,
 returns a matching with the mimimum total weight among the ones containing
@@ -20,59 +20,52 @@ In case of error try to change the optional argument `tmaxscale` (default is `tm
 """
 function minimum_weight_perfect_matching end
 
-function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}, cutoff, kws...) where {U<:Real, E<:Edge}
-    wnew = Dict{E, U}()
-    for (e, c) in w
-        if c <= cutoff
-            wnew[e] = c
-        end
-    end
-    return minimum_weight_perfect_matching(g, wnew; kws...)
+function minimum_weight_perfect_matching(g::Graph, w::Dict{E, U}, cutoff, kws...) where {U <: Real, E <: Edge}
+	wnew = Dict{E, U}()
+	for (e, c) in w
+		if c <= cutoff
+			wnew[e] = c
+		end
+	end
+	return minimum_weight_perfect_matching(g, wnew; kws...)
 end
 
-function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}; tmaxscale=10.) where {U<:AbstractFloat, E<:Edge}
-    wnew = Dict{E, Int32}()
-    cmax = maximum(values(w))
-    cmin = minimum(values(w))
+function minimum_weight_perfect_matching(g::Graph, w::Dict{E, U}; tmaxscale = 10.0) where {U <: AbstractFloat, E <: Edge}
+	wnew = Dict{E, Int32}()
+	cmax = maximum(values(w))
+	cmin = minimum(values(w))
 
-    if cmin == cmax
-        # all weights are identical: _any_ pairing is a minimum weight perfect matching
-        weight = nv(g) * cmin / 2
-        mate = collect(reverse(vertices(g)))
-        return MatchingResult(weight, mate)
-    end
-    
-    tmax = typemax(Int32)  / tmaxscale # /10 is kinda arbitrary,
-                                # hopefully high enough to not occur in overflow problems
-    for (e, c) in w
-        wnew[e] = round(Int32, (c-cmin) / (cmax-cmin) * tmax)
-    end
-    match = minimum_weight_perfect_matching(g, wnew)
-    weight = zero(U)
-    for i=1:nv(g)
-        j = match.mate[i]
-        if j > i
-            weight += w[E(i,j)]
-        end
-    end
-    return MatchingResult(weight, match.mate)
+	tmax = typemax(Int32) / tmaxscale # /10 is kinda arbitrary,
+	# hopefully high enough to not occur in overflow problems
+	for (e, c) in w
+		wnew[e] = round(Int32, (c - cmin) / max(cmax - cmin, 1) * tmax)
+	end
+	match = minimum_weight_perfect_matching(g, wnew)
+	weight = zero(U)
+	for i ∈ 1:nv(g)
+		j = match.mate[i]
+		if j > i
+			weight += w[E(i, j)]
+		end
+	end
+	return MatchingResult(weight, match.mate)
 end
 
-function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}) where {U<:Integer, E<:Edge}
-    m = BlossomV.Matching(nv(g))
-    for (e, c) in w
-        BlossomV.add_edge(m, src(e)-1, dst(e)-1, c)
-    end
-    BlossomV.solve(m)
+function minimum_weight_perfect_matching(g::Graph, w::Dict{E, U}) where {U <: Integer, E <: Edge}
+	m = BlossomV.Matching(nv(g))
+	for (e, c) in w
+		BlossomV.add_edge(m, src(e) - 1, dst(e) - 1, c)
+	end
+	BlossomV.solve(m)
 
-    mate = fill(-1, nv(g))
-    totweight = zero(U)
-    for i=1:nv(g)
-        j = BlossomV.get_match(m, i-1) + 1
-        mate[i] = j <= 0 ? -1 : j
-        if i < j
-            totweight += w[Edge(i,j)]
-        end
-    end
-    return MatchingResult(totweight, mate)
+	mate = fill(-1, nv(g))
+	totweight = zero(U)
+	for i ∈ 1:nv(g)
+		j = BlossomV.get_match(m, i - 1) + 1
+		mate[i] = j <= 0 ? -1 : j
+		if i < j
+			totweight += w[Edge(i, j)]
+		end
+	end
+	return MatchingResult(totweight, mate)
 end
