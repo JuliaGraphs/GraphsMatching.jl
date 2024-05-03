@@ -254,6 +254,33 @@ end
     @test match.mate[2] == 3
     @test match.mate[3] == 2
     @test match.weight ≈ 11.5
+
+    # no existing matching
+    g = complete_graph(4)
+    w = Dict{Edge,Int}()
+    w[Edge(1,2)] = 10
+    w[Edge(1,3)] = 20
+    w[Edge(1,4)] = 40
+
+    match = minimum_weight_perfect_matching(g, w)
+    @test match.mate[1] == -1
+    @test match.mate[4] == -1
+    @test match.mate[2] == -1
+    @test match.mate[3] == -1
+    @test match.weight == typemax(Int)
+
+    g = complete_graph(4)
+    w = Dict{Edge,Float64}()
+    w[Edge(1,2)] = 0.5
+    w[Edge(1,3)] = 10.2
+    w[Edge(1,4)] = -5.6
+
+    match = minimum_weight_perfect_matching(g, w)
+    @test match.mate[1] == -1
+    @test match.mate[4] == -1
+    @test match.mate[2] == -1
+    @test match.mate[3] == -1
+    @test match.weight == typemax(Float64)
 end
 
 
