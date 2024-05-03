@@ -77,7 +77,7 @@ function minimum_weight_perfect_matching(g::Graph, w::AbstractMatrix{U}, cutoff,
 			wnew[e] = c
 		end
 	end
-	return minimum_weight_perfect_matching(g, wnew; kws...)
+	return minimum_weight_perfect_matching(g, wnew, kws...)
 end
 
 function minimum_weight_perfect_matching(g::Graph, w::AbstractMatrix{U} = default_weights(g), kws...) where {U <: Real}
@@ -85,5 +85,5 @@ function minimum_weight_perfect_matching(g::Graph, w::AbstractMatrix{U} = defaul
 	for e in edges(g)
 		wnew[e] = w[src(e), dst(e)]
 	end
-	return minimum_weight_perfect_matching(g, wnew; kws...)
+	return minimum_weight_perfect_matching(g, wnew, kws...)
 end
