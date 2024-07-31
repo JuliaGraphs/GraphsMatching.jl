@@ -7,6 +7,22 @@ using LinearAlgebra: I
 
 @testset "GraphsMatching" begin
 
+@testset "maximum_weight_matching_reduction" begin
+    N = Int(1e2)
+    g = complete_graph(N)
+    m = ne(g)
+    w = randn(N,N)
+    w = transpose(w)*w
+    match_sol = maximum_weight_matching(g, optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0), w)
+    match_red = maximum_weight_matching_reduction(g,w)
+    sol = Edge[]
+    for i in 1:m
+        if(match_sol[i] > 0)
+            push!(sol,Edge(i,match_sol[i]))
+        end
+    @test sol = match_red
+end
+
 @testset "maximum_weight_matching" begin
     g = complete_graph(3)
     w = [

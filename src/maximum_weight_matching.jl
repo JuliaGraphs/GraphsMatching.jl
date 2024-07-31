@@ -77,3 +77,49 @@ function default_weights(g::G) where {G<:AbstractGraph}
   end
   return m
 end
+
+"""
+maximum_weight_matching_reduction(g::Graph, w::Matrix{Real}) -> Array{Edge}
+
+Given a graph `g` and an edgemap `w` containing weights associated to edges,
+returns a matching with the maximum total weight.
+`w` is a dictionary that maps edges i => j to weights.
+If no weight parameter is given, all edges will be considered to have weight 1
+
+This algorithm use a reduction based on the minimum_weight_perfect_matching function 
+to find the maximum weight matching.
+
+Return an array of edges contained in the matching.
+"""
+function maximum_weight_matching_reduction(g::Graph, 
+  w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
+  
+  h = deepcopy(g)
+  iter = collect(edges(h))
+  l = nv(h)
+  add_vertices!(h,l)
+  weights = Dict{typeof(iter[1]),typeof(w[1][1])}()
+  for edge in iter
+      add_edge!(h,src(edge) + l,dst(edge) + l)
+      weights[edge] = -w[src(edge),dst(edge)]
+      weights[Edge(dst(edge),src(edge))] = -w[src(edge),dst(edge)]
+      weights[Edge(src(edge) + l,dst(edge) + l)] = -w[src(edge),dst(edge)]
+      weights[Edge(dst(edge) + l,src(edge) + l)] = -w[src(edge),dst(edge)]
+  end
+  for i in 1:l
+      add_edge!(g,i,i+l)
+      weights[Edge(i,i+l)] = 0 
+  end
+  
+  match = minimum_weight_perfect_matching(h,weights)
+  
+  result = Edge[]
+
+  for i in 1:l
+    if(match.mate[i] <= l && match.mate[i] > 0)
+      push!(result,Edge(i,match.mate[i]))
+    end
+  end
+  
+  return result
+end
