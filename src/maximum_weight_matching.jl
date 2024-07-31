@@ -21,34 +21,40 @@ Returns MatchingResult containing:
 """
 function maximum_weight_matching end
 
-function maximum_weight_matching(g::Graph,
-          optimizer,
-          w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
+function maximum_weight_matching(
+    g::Graph,
+    optimizer,
+    w::AbstractMatrix{U} = default_weights(g),
+) where {U<:Real}
 
     model = Model(optimizer)
     n = nv(g)
     edge_list = collect(edges(g))
 
     # put the edge weights in w in the right order to be compatible with edge_list
-    for j in 1:n
-      for i in 1:n
-        if i > j  && w[i,j] > zero(U) && w[j,i] < w[i,j]
-          w[j,i] = w[i,j]
+    for j = 1:n
+        for i = 1:n
+            if i > j && w[i, j] > zero(U) && w[j, i] < w[i, j]
+                w[j, i] = w[i, j]
+            end
+            if Edge(i, j) ∉ edge_list
+                w[i, j] = zero(U)
+            end
         end
-        if Edge(i,j) ∉ edge_list
-          w[i,j] = zero(U)
-        end
-      end
     end
 
     if is_bipartite(g)
-      @variable(model, x[edge_list] >= 0) # no need to enforce integrality
+        @variable(model, x[edge_list] >= 0) # no need to enforce integrality
     else
-      @variable(model, x[edge_list] >= 0, Int) # requires MIP solver
+        @variable(model, x[edge_list] >= 0, Int) # requires MIP solver
     end
-    @objective(model, Max, sum(x[e]*w[src(e),dst(e)] for e in edge_list))
+    @objective(model, Max, sum(x[e] * w[src(e), dst(e)] for e in edge_list))
 
-    @constraint(model, c1[i=1:n], sum(x[Edge(minmax(i,j))] for j in neighbors(g,i)) <= 1)
+    @constraint(
+        model,
+        c1[i = 1:n],
+        sum(x[Edge(minmax(i, j))] for j in neighbors(g, i)) <= 1
+    )
     optimize!(model)
     status = JuMP.termination_status(model)
     status != MOI.OPTIMAL && error("JuMP solver failed to find optimal solution.")
@@ -58,24 +64,28 @@ function maximum_weight_matching(g::Graph,
 end
 
 """ Returns an array of mates from a dictionary that maps edges to {0,1} """
-function dict_to_arr(n::Int64, solution::JuMP.Containers.DenseAxisArray{U,1,Tuple{Array{E,1}}}, edge_list::AbstractVector{E}) where {U<: Real, E<: Edge}
-  mate = fill(-1,n)
-  for e in edge_list
-    if solution[e] >= 1 - 1e-5 # Some tolerance to numerical approximations by the solver.
-        mate[src(e)] = dst(e)
-        mate[dst(e)] = src(e)
+function dict_to_arr(
+    n::Int64,
+    solution::JuMP.Containers.DenseAxisArray{U,1,Tuple{Array{E,1}}},
+    edge_list::AbstractVector{E},
+) where {U<:Real,E<:Edge}
+    mate = fill(-1, n)
+    for e in edge_list
+        if solution[e] >= 1 - 1e-5 # Some tolerance to numerical approximations by the solver.
+            mate[src(e)] = dst(e)
+            mate[dst(e)] = src(e)
+        end
     end
-  end
-  return mate
+    return mate
 end
 
 
 function default_weights(g::G) where {G<:AbstractGraph}
-  m = spzeros(nv(g),nv(g))
-  for e in edges(g)
-    m[src(e),dst(e)] = 1
-  end
-  return m
+    m = spzeros(nv(g), nv(g))
+    for e in edges(g)
+        m[src(e), dst(e)] = 1
+    end
+    return m
 end
 
 """
@@ -91,35 +101,37 @@ to find the maximum weight matching (see https://homepages.cwi.nl/~schaefer/ftp/
 
 Return an array of edges contained in the matching.
 """
-function maximum_weight_matching_reduction(g::Graph, 
-  w::AbstractMatrix{U} = default_weights(g)) where {U <:Real}
-  
-  h = deepcopy(g)
-  iter = collect(edges(h))
-  l = nv(h)
-  add_vertices!(h,l)
-  weights = Dict{typeof(iter[1]),typeof(w[1][1])}()
-  for edge in iter
-      add_edge!(h,src(edge) + l,dst(edge) + l)
-      weights[edge] = -w[src(edge),dst(edge)]
-      weights[Edge(dst(edge),src(edge))] = -w[src(edge),dst(edge)]
-      weights[Edge(src(edge) + l,dst(edge) + l)] = -w[src(edge),dst(edge)]
-      weights[Edge(dst(edge) + l,src(edge) + l)] = -w[src(edge),dst(edge)]
-  end
-  for i in 1:l
-      add_edge!(g,i,i+l)
-      weights[Edge(i,i+l)] = 0 
-  end
-  
-  match = minimum_weight_perfect_matching(h,weights)
-  
-  result = Edge[]
+function maximum_weight_matching_reduction(
+    g::Graph,
+    w::AbstractMatrix{U} = default_weights(g),
+) where {U<:Real}
 
-  for i in 1:l
-    if(match.mate[i] <= l && match.mate[i] > 0)
-      push!(result,Edge(i,match.mate[i]))
+    h = deepcopy(g)
+    iter = collect(edges(h))
+    l = nv(h)
+    add_vertices!(h, l)
+    weights = Dict{typeof(iter[1]),typeof(w[1][1])}()
+    for edge in iter
+        add_edge!(h, src(edge) + l, dst(edge) + l)
+        weights[edge] = -w[src(edge), dst(edge)]
+        weights[Edge(dst(edge), src(edge))] = -w[src(edge), dst(edge)]
+        weights[Edge(src(edge) + l, dst(edge) + l)] = -w[src(edge), dst(edge)]
+        weights[Edge(dst(edge) + l, src(edge) + l)] = -w[src(edge), dst(edge)]
     end
-  end
-  
-  return result
+    for i = 1:l
+        add_edge!(g, i, i + l)
+        weights[Edge(i, i + l)] = 0
+    end
+
+    match = minimum_weight_perfect_matching(h, weights)
+
+    result = Edge[]
+
+    for i = 1:l
+        if (match.mate[i] <= l && match.mate[i] > 0)
+            push!(result, Edge(i, match.mate[i]))
+        end
+    end
+
+    return result
 end
