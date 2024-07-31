@@ -45,6 +45,6 @@ w = zeros(3,3)
 w[1,2] = 1
 w[3,2] = 1
 w[1,3] = 1
-match = maximum_weight_matching(g,with_optimizer(Cbc.Optimizer, logLevel=0),w)
+match = maximum_weight_matching(g, optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),w)
 # match.weight ≈ 1
 ```
