@@ -107,11 +107,12 @@ function maximum_weight_matching_reduction(
 ) where {U<:Real}
 
     h = deepcopy(g)
-    iter = collect(edges(h))
+    # collect needed since we modify the edges later
+    edge_iter = collect(edges(h))
     l = nv(h)
     add_vertices!(h, l)
-    weights = Dict{typeof(iter[1]),typeof(w[1][1])}()
-    for edge in iter
+    weights = Dict{edgetype(g), eltype(w)}()
+    for edge in edge_iter
         add_edge!(h, src(edge) + l, dst(edge) + l)
         weights[edge] = -w[src(edge), dst(edge)]
         weights[Edge(dst(edge), src(edge))] = -w[src(edge), dst(edge)]
@@ -125,13 +126,7 @@ function maximum_weight_matching_reduction(
 
     match = minimum_weight_perfect_matching(h, weights)
 
-    result = Edge[]
-
-    for i = 1:l
-        if (match.mate[i] <= l && match.mate[i] > 0)
-            push!(result, Edge(i, match.mate[i]))
-        end
-    end
+    result = [Edge(i, match.mate[i]) for i in 1:l if match.mate[i] <= l && match.mate[i] > 0]
 
     return result
 end
