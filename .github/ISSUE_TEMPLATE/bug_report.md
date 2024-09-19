@@ -30,7 +30,7 @@ If applicable, provide a minimal working example of the bug.
 **Version information**
  - output from `versioninfo()` surrounded by backticks (``)
  - output from `] status Graphs` surrounded by backticks (``)
-  - output from `] status GraphsMatching.jl` surrounded by backticks (``)
+  - output from `] status GraphsMatching` surrounded by backticks (``)
 
 
 **Additional context**
