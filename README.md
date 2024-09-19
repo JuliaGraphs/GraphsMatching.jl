@@ -1,10 +1,8 @@
 # GraphsMatching
 
-[![Build Status](https://travis-ci.org/JuliaGraphs/GraphsMatching.jl.svg?branch=master)](https://travis-ci.org/JuliaGraphs/GraphsMatching.jl)
-
-[![Coverage Status](https://coveralls.io/repos/github/JuliaGraphs/GraphsMatching.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaGraphs/GraphsMatching.jl?branch=master)
-
-[![codecov](https://codecov.io/gh/JuliaGraphs/GraphsMatching.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGraphs/GraphsMatching.jl)
+[![Build status](https://github.com/JuliaGraphs/GraphsMatching.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/JuliaGraphs/GraphsMatching.jl/actions/workflows/ci.yml?query=branch%3Amaster)
+[![Code coverage](http://codecov.io/github/JuliaGraphs/GraphsMatching.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaGraphs/GraphsMatching.jl?branch=master)
+[![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 
 Matching algorithms on top of [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl).
 
