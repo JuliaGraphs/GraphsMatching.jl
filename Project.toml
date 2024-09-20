@@ -15,7 +15,7 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 [compat]
 BlossomV = "0.4"
 Graphs = "1.4, 1.7"
-Hungarian = "0.4, 0.6"
+Hungarian = "0.4, 0.6, 0.7"
 JuMP = "1"
 MathOptInterface = "1"
 julia = "1"
