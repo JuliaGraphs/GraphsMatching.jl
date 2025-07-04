@@ -7,10 +7,19 @@ using SparseArrays: spzeros
 using JuMP
 using MathOptInterface
 const MOI = MathOptInterface
-import BlossomV # 'using BlossomV'  leads to naming conflicts with JuMP
+import BlossomV
+import LEMONGraphs
 using Hungarian
 
-export MatchingResult, maximum_weight_matching, maximum_weight_matching_reduction, maximum_weight_maximal_matching, minimum_weight_perfect_matching, HungarianAlgorithm, LPAlgorithm
+export MatchingResult,
+    maximum_weight_matching,
+    maximum_weight_matching_reduction,
+    maximum_weight_maximal_matching,
+    minimum_weight_perfect_matching,
+    HungarianAlgorithm,
+    LPAlgorithm,
+    BlossomVAlgorithm,
+    LEMONMWPMAlgorithm
 
 """
     struct MatchingResult{U}

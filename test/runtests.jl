@@ -259,11 +259,15 @@ using LinearAlgebra: I
 
 
     @testset "minimum_weight_perfect_matching" begin
+        for algorithm in [
+            BlossomVAlgorithm(),
+            LEMONMWPMAlgorithm(),
+        ]
 
         w = Dict(Edge(1, 2) => 500)
         g = Graph(2)
         add_edge!(g, 1, 2)
-        match = minimum_weight_perfect_matching(g, w)
+        match = minimum_weight_perfect_matching(g, w, algorithm)
         @test match.mate[1] == 2
 
 
@@ -276,7 +280,7 @@ using LinearAlgebra: I
         )
 
         g = complete_graph(4)
-        match = minimum_weight_perfect_matching(g, w)
+        match = minimum_weight_perfect_matching(g, w, algorithm)
         @test match.mate[1] == 2
         @test match.mate[2] == 1
         @test match.mate[3] == 4
@@ -291,7 +295,7 @@ using LinearAlgebra: I
             Edge(2, 4) => 1000,
         )
         g = complete_graph(4)
-        match = minimum_weight_perfect_matching(g, w)
+        match = minimum_weight_perfect_matching(g, w, algorithm)
         @test match.mate[1] == 3
         @test match.mate[2] == 4
         @test match.mate[3] == 1
@@ -305,7 +309,7 @@ using LinearAlgebra: I
         w[Edge(2, 3)] = -11
         w[Edge(2, 4)] = -1
 
-        match = minimum_weight_perfect_matching(g, w)
+        match = minimum_weight_perfect_matching(g, w, algorithm)
         @test match.mate[1] == 4
         @test match.mate[4] == 1
         @test match.mate[2] == 3
@@ -321,7 +325,7 @@ using LinearAlgebra: I
         w[Edge(2, 4)] = 2
         w[Edge(1, 2)] = 100
 
-        match = minimum_weight_perfect_matching(g, w, 50)
+        match = minimum_weight_perfect_matching(g, w, 50, algorithm)
         @test match.mate[1] == 4
         @test match.mate[4] == 1
         @test match.mate[2] == 3
@@ -338,9 +342,11 @@ using LinearAlgebra: I
         g = Graph([Edge(1, 2)])
         wFloat = Dict(Edge(1, 2) => 2.0)
         wInt = Dict(Edge(1, 2) => 2)
-        matchFloat = minimum_weight_perfect_matching(g, wFloat)
-        matchInt = minimum_weight_perfect_matching(g, wInt)
+        matchFloat = minimum_weight_perfect_matching(g, wFloat, algorithm)
+        matchInt = minimum_weight_perfect_matching(g, wInt, algorithm)
         @test matchFloat.mate == matchInt.mate
         @test matchFloat.weight == matchInt.weight
+
+        end
     end
 end
