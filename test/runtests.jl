@@ -5,6 +5,8 @@ using Cbc
 using JuMP
 using LinearAlgebra: I
 
+import BlossomV # to test the extension
+
 @testset "GraphsMatching" begin
 
     @testset "maximum_weight_matching_reduction" begin

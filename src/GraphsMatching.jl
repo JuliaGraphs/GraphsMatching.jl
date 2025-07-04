@@ -7,7 +7,6 @@ using SparseArrays: spzeros
 using JuMP
 using MathOptInterface
 const MOI = MathOptInterface
-import BlossomV
 import LEMONGraphs
 using Hungarian
 
@@ -20,6 +19,16 @@ export MatchingResult,
     LPAlgorithm,
     BlossomVAlgorithm,
     LEMONMWPMAlgorithm
+
+function __init__()
+    if isdefined(Base.Experimental, :register_error_hint)
+        Base.Experimental.register_error_hint(MethodError) do io, exc, argtypes, kwargs
+            if BlossomVAlgorithm in argtypes
+                print(io,"""\nPlease first import `BlossomV` to make BlossomV-based matching available.""")
+            end
+        end
+    end
+end
 
 """
     struct MatchingResult{U}
