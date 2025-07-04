@@ -13,7 +13,8 @@ Edges in `g` not present in `w` will not be considered for the matching.
 You can use the `algorithm` argument to specify the algorithm to use.
 
 A `cutoff` argument can be given, to reduce the computational time by
-excluding edges with weights higher than the cutoff.
+excluding edges with weights higher than the cutoff (effective only for some algorithms,
+not for the default `LEMONMWPMAlgorithm`).
 
 When the weights are non-integer types, the keyword argument `tmaxscale` can be used to
 scale the weights to integer values.
@@ -56,18 +57,27 @@ If BlossomV.jl does not work on your system,
 consider using the LEMONGraphs.jl algorithm instead (the default algorithm),
 which we distribute precompiled on all platforms.
 
-See also: [`minimum_weight_perfect_matching`](@ref)
+See also: [`minimum_weight_perfect_matching`](@ref), [`LEMONMWPMAlgorithm`](@ref)
 """
 struct BlossomVAlgorithm <: AbstractMinimumWeightPerfectMatchingAlgorithm end
+
+"""
+    LEMONMWPMAlgorithm()
+
+Use the LEMON C++ implementation of minimum weight perfect matching.
+
+See also: [`minimum_weight_perfect_matching`](@ref), [`BlossomVAlgorithm`](@ref)
+"""
+struct LEMONMWPMAlgorithm <: AbstractMinimumWeightPerfectMatchingAlgorithm end
 
 function minimum_weight_perfect_matching(
     g::Graph, w::Dict{E,U}
 ) where {U<:Integer,E<:Edge}
-    return minimum_weight_perfect_matching(g, w, BlossomVAlgorithm())
+    return minimum_weight_perfect_matching(g, w, LEMONMWPMAlgorithm())
 end
 
 function minimum_weight_perfect_matching(
-    g::Graph, w::Dict{E,U}, cutoff, algorithm::AbstractMinimumWeightPerfectMatchingAlgorithm=BlossomVAlgorithm(); kws...
+    g::Graph, w::Dict{E,U}, cutoff, algorithm::AbstractMinimumWeightPerfectMatchingAlgorithm=LEMONMWPMAlgorithm(); kws...
 ) where {U<:Real,E<:Edge}
     wnew = Dict{E,U}()
     for (e, c) in w
@@ -79,7 +89,7 @@ function minimum_weight_perfect_matching(
 end
 
 function minimum_weight_perfect_matching(
-    g::Graph, w::Dict{E,U}, algorithm::AbstractMinimumWeightPerfectMatchingAlgorithm=BlossomVAlgorithm(); tmaxscale=10.0
+    g::Graph, w::Dict{E,U}, algorithm::AbstractMinimumWeightPerfectMatchingAlgorithm=LEMONMWPMAlgorithm(); tmaxscale=10.0
 ) where {U<:AbstractFloat,E<:Edge}
     wnew = Dict{E,Int32}()
     cmax = maximum(values(w))
@@ -95,7 +105,7 @@ function minimum_weight_perfect_matching(
     for i in 1:nv(g)
         j = match.mate[i]
         if j > i
-            weight += w[E(i, j)]
+            weight += get(w, E(i, j), zero(U))
         end
     end
     return MatchingResult(weight, match.mate)
@@ -118,4 +128,11 @@ function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}, ::BlossomVAlgor
         end
     end
     return MatchingResult(totweight, mate)
+end
+
+function minimum_weight_perfect_matching(g::Graph, w::Dict{E,U}, ::LEMONMWPMAlgorithm) where {U<:Integer,E<:Edge}
+    max = 2*abs(maximum(values(w)))
+    weights = [-get(w, e, max) for e in edges(g)]
+    totweight, mate = LEMONGraphs.maxweightedperfectmatching(g, weights)
+    return MatchingResult(-totweight, mate)
 end
