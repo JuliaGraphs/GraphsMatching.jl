@@ -5,7 +5,11 @@ using Cbc
 using JuMP
 using LinearAlgebra: I
 
-import BlossomV # to test the extension
+if !Sys.iswindows()
+    using Pkg
+    Pkg.add("BlossomV")
+    import BlossomV # to test the extension
+end
 
 @testset "GraphsMatching" begin
 
@@ -261,10 +265,11 @@ import BlossomV # to test the extension
 
 
     @testset "minimum_weight_perfect_matching" begin
-        for algorithm in [
-            BlossomVAlgorithm(),
-            LEMONMWPMAlgorithm(),
-        ]
+        algos = Any[LEMONMWPMAlgorithm()]
+        if !Sys.iswindows()
+            push!(algos, BlossomVAlgorithm())
+        end
+        for algorithm in algos
 
         w = Dict(Edge(1, 2) => 500)
         g = Graph(2)
