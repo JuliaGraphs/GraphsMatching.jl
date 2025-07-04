@@ -41,7 +41,7 @@ end
 
 include("lp.jl")
 include("maximum_weight_matching.jl")
-include("blossomv.jl")
+include("minimum_weight_perfect_matching.jl")
 include("hungarian.jl")
 include("maximum_weight_maximal_matching.jl")
 
