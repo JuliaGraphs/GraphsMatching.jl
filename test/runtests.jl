@@ -1,7 +1,7 @@
 using Graphs
 using GraphsMatching
 using Test
-using Cbc
+using HiGHS
 using JuMP
 using LinearAlgebra: I
 
@@ -21,7 +21,7 @@ end
             w = transpose(w) * w
             match_sol = maximum_weight_matching(
                 g,
-                optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+                HiGHS.Optimizer,
                 w,
             )
             match_red = maximum_weight_matching_reduction(g, w)
@@ -44,7 +44,7 @@ end
         ]
         match = maximum_weight_matching(
             g,
-            optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            HiGHS.Optimizer,
             w,
         )
         @test match.mate[1] == 3
@@ -57,7 +57,7 @@ end
         w[1, 3] = 1
         match = maximum_weight_matching(
             g,
-            optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            HiGHS.Optimizer,
             w,
         )
         @test match.weight ≈ 1
@@ -75,7 +75,7 @@ end
 
         match = maximum_weight_matching(
             g,
-            optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            HiGHS.Optimizer,
             w,
         )
         @test match.weight ≈ 3
@@ -91,7 +91,7 @@ end
         add_edge!(g, 3, 4)
         match = maximum_weight_matching(
             g,
-            optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            HiGHS.Optimizer,
         )
         @test match.weight ≈ 2
         @test match.mate[1] == 2
@@ -107,7 +107,7 @@ end
 
         match = maximum_weight_matching(
             g,
-            optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            HiGHS.Optimizer,
             w,
         )
         @test match.weight ≈ 2
@@ -124,7 +124,7 @@ end
 
         match = maximum_weight_matching(
             g,
-            optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            HiGHS.Optimizer,
             w,
         )
         @test match.weight ≈ 5
@@ -147,7 +147,7 @@ end
             g,
             w,
             algorithm = LPAlgorithm(),
-            optimizer = optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            optimizer = HiGHS.Optimizer,
         )
         @test match.weight ≈ 21
         @test match.mate[1] == 3
@@ -165,7 +165,7 @@ end
             g,
             w,
             algorithm = LPAlgorithm(),
-            optimizer = optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            optimizer = HiGHS.Optimizer,
         )
         @test match.weight ≈ 11.5
         @test match.mate[1] == 4
@@ -185,7 +185,7 @@ end
             g,
             w,
             algorithm = LPAlgorithm(),
-            optimizer = optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            optimizer = HiGHS.Optimizer,
             cutoff = 0,
         )
         @test match.weight ≈ 11.5
@@ -206,7 +206,7 @@ end
             g,
             w,
             algorithm = LPAlgorithm(),
-            optimizer = optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+            optimizer = HiGHS.Optimizer,
             cutoff = 0,
         )
         @test match.weight ≈ 12
