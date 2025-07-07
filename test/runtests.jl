@@ -5,7 +5,7 @@ using Cbc
 using JuMP
 using LinearAlgebra: I
 
-if !Sys.iswindows() && Sys.ARCH == :x86_64
+@static if !Sys.iswindows() && Sys.ARCH == :x86_64
     using Pkg
     Pkg.add("BlossomV")
     import BlossomV # to test the extension
@@ -144,7 +144,7 @@ end
 
     @testset "minimum_weight_perfect_matching" begin
         algos = Any[LEMONMWPMAlgorithm()]
-        if !Sys.iswindows() && Sys.ARCH == :x86_64
+        @static if !Sys.iswindows() && Sys.ARCH == :x86_64
             push!(algos, BlossomVAlgorithm())
         end
         for algorithm in algos
