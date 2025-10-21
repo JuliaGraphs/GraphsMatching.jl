@@ -4,7 +4,7 @@ import Graphs
 
 makedocs(
     modules = [GraphsMatching],
-    format = :html,
+    format = Documenter.HTML(),
     sitename = "GraphsMatching",
 	pages = Any[
 		"Getting started"         => "index.md",
