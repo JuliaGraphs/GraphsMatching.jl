@@ -2,6 +2,7 @@
 
 [![Build status](https://github.com/JuliaGraphs/GraphsMatching.jl/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/JuliaGraphs/GraphsMatching.jl/actions/workflows/ci.yml?query=branch%3Amaster)
 [![codecov](https://codecov.io/github/JuliaGraphs/GraphsMatching.jl/branch/master/graph/badge.svg?token=2eGhm8xuNl)](https://codecov.io/github/JuliaGraphs/GraphsMatching.jl/tree/master)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliagraphs.org/GraphsMatching.jl/dev/)
 [![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
 
 Matching algorithms on top of [Graphs.jl](https://github.com/JuliaGraphs/Graphs.jl).
