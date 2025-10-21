@@ -8,6 +8,7 @@ makedocs(
     sitename = "GraphsMatching",
 	pages = Any[
 		"Getting started"         => "index.md",
+		"API"                     => "API.md",
 		"Internals"               => "internals.md",
     ]
 )
