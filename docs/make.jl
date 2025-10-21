@@ -17,7 +17,5 @@ deploydocs(
     deps        = nothing,
     make        = nothing,
     repo        = "github.com/JuliaGraphs/GraphsMatching.jl.git",
-    target      = "build",
-    julia       = "0.6",
-    osname      = "linux"
+    versions = ["stable" => "v^", "v#.#", "dev" => "master"],
 )
