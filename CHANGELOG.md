@@ -1,5 +1,9 @@
 # News
 
+## Unreleased
+
+- Require LEMONGraphs 0.1.2 to fix perfect matching with current LEMON binaries.
+
 ## 0.2.1 - 2025-07-05
 
 - Introduce LEMONGraphs as an option for running `minimum_weight_perfect_matching` and make it default.
