@@ -1,6 +1,6 @@
 # News
 
-## Unreleased
+## 0.2.2 - 2026-09-12
 
 - Require LEMONGraphs 0.1.2 to fix perfect matching with current LEMON binaries.
 
